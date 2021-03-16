@@ -29,12 +29,25 @@ void setup()
 	yServo.write(yCurrentAngle);
 }
 
+/*
+ * updates the position of the motor based on the ADC code of the controllerPin
+ * 
+ * controllerPin:
+ *	the pin whom's adc code dictates what angle the motor should be
+ *	if the motor is continous then it dictates motor speed
+ *
+ * servo:
+ *	the motor that needs to be moved/updated
+ *
+ * currentAngle:
+ *	the current angle the motor is in
+ */
 void updateMotor(const unsigned int controllerPin, Servo& servo, unsigned int& currentAngle)
 {
 
 	// read the adc code from the potentiometer
 	// converting it to an angle from 0 -> 180
-	float newAngle = analogRead(controllerPin);	// get the voltage, on 5v 0 - 1023 scale
+	float newAngle = analogRead(controllerPin);	// get the voltage, on a 5v 0 - 1023 scale
 	newAngle /= 1023;				// convert that voltage into a ratio
 	newAngle *= 180;				// convert that ratio into an angle
 
@@ -53,17 +66,35 @@ void updateMotor(const unsigned int controllerPin, Servo& servo, unsigned int& c
 	}
 }
 
+/*
+ * get a voltage reading from an analog pin
+ * internally converts adc code to a voltage
+ *
+ * analogPin
+ *	the analog pin to get a voltage reading 
+ *
+ * return
+ * 	the calculated voltage
+ */
+unsigned int readVoltage(unsigned int analogPin)
+{
+	float voltage = analogRead(analogPin);		// read the voltage, on a 5v 0 - 1023 scale
+	voltage /= 1023;				// convert that voltage into a ratio
+	voltage *= 5;					// convert that ratio into actual voltage
+	return (unsigned int) voltage;			// reinterpret cast and return the voltage
+}
+
 void loop() 
 {
 #if DBG_VERBOSE
 	// photoresistor readings
 	Serial.print("Photoresistor: ");
-	Serial.print(analogRead(photoresistorPin));
+	Serial.print(readVoltage(photoresistorPin));
 	Serial.print("\t");
 
 	// Solar Panel ADC reading
 	Serial.print("Solar Panel: ");
-	Serial.print(analogRead(solarPanelPin));
+	Serial.print(readVoltage(solarPanelPin));
 	Serial.print("\t");
 
 	// Motor Positioning
