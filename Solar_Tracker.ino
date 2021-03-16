@@ -67,21 +67,36 @@ void updateMotor(const unsigned int controllerPin, Servo& servo, unsigned int& c
 }
 
 /*
- * get a voltage reading from an analog pin
- * internally converts adc code to a voltage
+ * gets the voltage from the ADC code of the specified analog pin
+ * 
+ * analogPin:
+ * 	the analog pin to get the ADC code from
+
+ * return 
+ 	the calculated voltage output
+ */
+double readVoltage(const unsigned int analogPin)
+{
+	double voltage = analogRead(analogPin);		// read the voltage, on a 5v 0 - 1023 scale
+	voltage *= (5.0 / 1023.0);			// convert that ADC code  into the voltage divider's output voltage
+	return voltage;					// reinterpret cast and return the voltage
+}
+
+/*
+ * get the solar panel's voltage divider's voltage_in
+ * using the ADC code from the entered analog pin
  *
  * analogPin
- *	the analog pin to get a voltage reading 
+ * 	the analog pin to get the ADC code from
  *
  * return
- * 	the calculated voltage
+ *	the calculated voltage output of the solar panel
  */
-unsigned int readVoltage(unsigned int analogPin)
+double readSolarPanel(const unsigned int analogPin)
 {
-	float voltage = analogRead(analogPin);		// read the voltage, on a 5v 0 - 1023 scale
-	voltage /= 1023;				// convert that voltage into a ratio
-	voltage *= 5;					// convert that ratio into actual voltage
-	return (unsigned int) voltage;			// reinterpret cast and return the voltage
+	double voltage = readVoltage(analogPin);	// read the voltage of the voltage divider's output
+	voltage *= 1.51;				// calculate voltage solar panel output voltage from voltage divider's output voltage
+	return voltage;
 }
 
 void loop() 
@@ -94,7 +109,7 @@ void loop()
 
 	// Solar Panel ADC reading
 	Serial.print("Solar Panel: ");
-	Serial.print(readVoltage(solarPanelPin));
+	Serial.print(readSolarPanel(solarPanelPin));
 	Serial.print("\t");
 
 	// Motor Positioning
