@@ -1,6 +1,8 @@
 #include <Servo.h>
-
+#include <Sleep_n0m1.h>
 #define DBG_VERBOSE 1
+
+Sleep sleep; //sleep object
 
 // motors 
 Servo xServo;
@@ -44,7 +46,7 @@ void setup()
  */
 void updateMotor(const unsigned int controllerPin, Servo& servo, unsigned int& currentAngle)
 {
-
+	sleep.sleepDelay(10000);
 	// read the adc code from the potentiometer
 	// converting it to an angle from 0 -> 180
 	float newAngle = analogRead(controllerPin);	// get the voltage, on a 5v 0 - 1023 scale
@@ -62,7 +64,7 @@ void updateMotor(const unsigned int controllerPin, Servo& servo, unsigned int& c
 	{
 		servo.write(newAngle);
 		currentAngle = newAngle;
-		delay(200);
+		delay(1000);
 	}
 }
 
